@@ -20,16 +20,14 @@ rstr_s:
 	add t1, t2, -1			# j = src_Len - 1	
 
 loop:
-	beq t0, t2, done
+	blt t0, t2, done
 
 	lb t3, (a1)
 	sb t3, (a0)
 
 	addi a0, a0, 1
 	addi a1, a1, -1
-	addi t0, t0, 1
-	
-	j done
+
 done: 
 	sb zero, (a0)
 	
