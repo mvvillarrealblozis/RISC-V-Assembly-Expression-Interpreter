@@ -8,43 +8,38 @@
 # t0 - int i
 # t1 - int j
 # t2 - int strlen(src)
-# t3 - temp char
-# t4 - temp 
+# t3 - temp num
+# t4 - temp byte
+
 
 rstr_s:
 	addi sp, sp, -24		# allocate space on stack
 	sd ra, (sp)				# store return address
-
-	lw t4, (a0)				# load val of a0(*dst) into t4 for future use
-	lw t5, (a1)				# load val of a1(*src) into t5 for future use
-	
-	sd t4, 8(sp)			# store the value of t4(*dst) onto the stack 
-	sd t5, 16(sp)			# store the value of t5(*src) onto the stack 
+	sd a0, 8(sp)			# store a0 (*dst) val in stack
+	sd a1, 8(sp)			# store a1 (*src) val in stack
 	
 	mv a0, a1				# mv a1 (src) to a0
 	
 	call strlen 			# call strlen with a0(src str)
 	
 	mv t2, a0 				# store strlen(src) in t2
+	mv a1, a0 
 	
-	ld t4, 8(sp)			# restore value kept in t4(*dst)
-	ld t5, 16(sp)			# restore value kept in t5(*src)
-		
-
-	mv a0, t4				# move t4(*dst) back into a0 
-	mv a1, t5				# move t5(*src) back into a1
-
+	ld a0, 8(sp)			# load a0 (*dst) val from stack
+	ld a1, 8(sp)			# load a1 (*src) val from stack 
+	
 	li t0, 0				# i = 0
 	add t1, t2, -1			# j = src_Len - 1
 	
 loop:
+	add t3, a1, t0 			# t3 = a1 (src) + t0 (i)
+	lb t4, (t3)
+
 	bge t0, t2, done 		# if t0 >= t2 go to done label
-
-	lb t3, (a1)				# t3 = src[i]
-	sb t3, (a0)				# dst[i] = src[i] or t3 
-
-	addi t0, t0, 16			# i++
-	addi t1, t1, -16		# j-- 
+	
+	
+	addi t0, t0, 1			# i++
+	addi t1, t1, -1			# j-- 
 
 	j loop
 
