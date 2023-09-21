@@ -27,14 +27,21 @@ rstr_s:
 	li t0, 0				# i = 0
 	add t1, t2, -1			# j = src_Len - 1	
 
+	mv a0, t4
+	add a1, a1, t1
+
 loop:
-	blt t0, t2, done
+	bge t0, t2, done
 
 	lb t3, (a1)
 	sb t3, (a0)
 
 	addi a0, a0, 1
 	addi a1, a1, -1
+
+	addi t0, t0, 1
+
+	j loop
 
 done: 
 	sb zero, (a0)
