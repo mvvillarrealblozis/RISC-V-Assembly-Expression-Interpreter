@@ -4,17 +4,25 @@
 
 # Reverse a string iteratively
 # a0 - char *dst
-# a1 - char *str
+# a1 - char *src
 # t0 - int i
 # t1 - int j
 # t2 - int strlen(src)
+# t3 - temp char
+# t4 - temp 
 
 rstr_s:
 	addi sp, sp, -16
 	sd ra, (sp)
 
+	lw t4, (a0)
+	
+	sd t4, 8(sp)
+	mv a0, a1
 	call strlen 
+	
 	mv t2, a0 				# store strlen(src) in t2
+	ld t4, 8(sp)
 	
 	li t0, 0				# i = 0
 	add t1, t2, -1			# j = src_Len - 1	
