@@ -9,22 +9,22 @@
 # a3 - int src_idx
 
 rstr_rec_s:
-	addi sp, sp, -32
+	addi sp, sp, -40
 	sd ra, (sp)
 
-	sb a0, (sp)
-	sb a1, 8(sp)
-	sb a2, 16(sp)
-	sb a3, 24(sp)
+	sd a0, 8(sp)
+	sd a1, 16(sp)
+	sd a2, 24(sp)
+	sd a3, 32(sp)
 
 	mv a0, a2								# move source into a0 
 	
 	call strlen
 
-	lb a0, (sp)
-	lb a1, 8(sp)
-	lb a2, 16(sp)
-	lb a3, 24(sp)
+	ld a0, 8(sp)
+	ld a1, 16(sp)
+	ld a2, 24(sp)
+	ld a3, 32(sp)
 
 	call rstr_rec_func_s
 
@@ -52,5 +52,5 @@ base_case:
 
 done:
 	ld ra, (sp)
-	addi sp, sp, 32
+	addi sp, sp, 40
 	ret 
