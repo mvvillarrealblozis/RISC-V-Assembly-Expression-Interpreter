@@ -12,6 +12,7 @@
 get_bitseq_s:
 	sub t1, a2, a1			# len = (end - start)
 	addi t1, t1, 1			# len = len + 1
+	srlw t0, a0, a1
 
 	li t3, 32
 	bne t1, t3, else
