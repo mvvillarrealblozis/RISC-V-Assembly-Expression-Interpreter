@@ -9,6 +9,7 @@
 # t2 - int strlen(src)
 # t3 - temp num
 # t4 - temp byte
+# t5/t6 temp registers
 
 
 rstr_s:
@@ -31,20 +32,20 @@ rstr_s:
 	
 loop:
 	bge t0, t2, done 		# if t0 >= t2 go to done label
-	add t3, a1, t1 			
-	lb t4, (t3)
+	add t3, a1, t1 			# calculate address (a1 + j) and store in t3 
+	lb t4, (t3)				# load byte from source at the jth index
 
-	add t5, a0, t0
-	sb t4, (t5)
+	add t5, a0, t0			# calculate address (a0 + i) and store in t5
+	sb t4, (t5)				# store the byte from src to dst at ith postion 
 	
 	addi t0, t0, 1			# i++
 	addi t1, t1, -1			# j-- 
 
 	j loop
 
-done: 
-	add t6, a0, t2
-	sb zero, (t6)
+done: 	
+	add t6, a0, t2			# calculate address (ao + strlen(src)) and store in t6 
+	sb zero, (t6)			# insert null terminator at the end of the string 
 	
 	ld ra, (sp)
 	addi sp, sp, 24

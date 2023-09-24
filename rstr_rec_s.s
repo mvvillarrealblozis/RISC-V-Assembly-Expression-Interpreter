@@ -1,4 +1,4 @@
-.global rstr_rec_s
+\.global rstr_rec_s
 .global strlen
 
 
@@ -29,7 +29,7 @@ rstr_rec_c:
 
 	call rstr_rec_s
 	
-
+	
 rstr_rec_s:
 	beq a3, zero, base_case
 	
