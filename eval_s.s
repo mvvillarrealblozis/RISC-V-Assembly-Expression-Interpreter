@@ -1,4 +1,4 @@
-.global eval_s
+	.global eval_s
 .global isdigit_s
 .global number_s
 .global factor_s
@@ -199,7 +199,7 @@ term_while_done:
 # returns value
 
 factor_s:
-	addi sp, sp, -56
+	addi sp, sp, -64
 	sd ra, (sp)
 	sd a0, 8(sp)
 	sd a1, 16(sp)
@@ -228,7 +228,7 @@ factor_s:
 	ld t0, 40(sp)
 	ld t1, 48(sp)
 	ld ra, (sp)
-	addi sp, sp, 56
+	addi sp, sp, 64
 	ret 
 
 factor_s_if:
@@ -243,6 +243,7 @@ factor_s_if:
 	sw t2, (a1)
 
 	call expression_s
+	
 
 	lw t2, (a1)
 	add t3, a0, t2
@@ -252,7 +253,7 @@ factor_s_if:
 
 	addi t2, t2, 1
 	sw t2, (a1)
-	
+
 	ld a0, 8(sp)
 	ld a1, 16(sp)
 	ld a2, 24(sp)
