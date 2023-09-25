@@ -1,4 +1,4 @@
-	.global eval_s
+.global eval_s
 .global isdigit_s
 .global number_s
 .global factor_s
@@ -113,7 +113,7 @@ term_s:
                         # These are caller-saved
                         # and we need them after
                         # the call to term_s
-    call factor_s
+    call number_s
     mv t0, a0           # t0 (value) = term_s(expr_str, pos)
 
     ld a0, 8(sp)        # Restore a0 from stack
@@ -142,7 +142,7 @@ term_while_cont:
     sd t4, 48(sp)
     sd t5, 56(sp)
 
-    call factor_s
+    call number_s
 
     ld t0, 24(sp)       # Restore t0 (value) from stack
     mul t0, t0, a0      # t0 (value) = t0 (value) * a0
@@ -167,7 +167,7 @@ term_while_else:
     sd t4, 48(sp)
     sd t5, 56(sp)
 
-    call factor_s
+    call number_s
 
     ld t0, 24(sp)       # Restore t0 (value) from stack
     div t0, t0, a0      # t0 (value) = t0 (value) / a0
@@ -199,71 +199,28 @@ term_while_done:
 # returns value
 
 factor_s:
-	addi sp, sp, -64
+	addi sp, sp, -24 
 	sd ra, (sp)
-	sd a0, 8(sp)
-	sd a1, 16(sp)
-	sd a2, 24(sp)
-	sd a3, 32(sp)
-	sd t0, 40(sp)
-	sd t1, 48(sp)
+	sd t0, 8(sp)
+	sd t1, 16(sp)
 	
 	li t0, '('
 	li t1, ')'
 	
-	lw t2, (a1)
-	add t3, a0, t2
-	lb a3, (t3)
+	lb a3, (a0)
 	
-	beq a3, t0, factor_s_if
+	beq a3, t0, factor_s_expression
 
 	call number_s
 
-	mv a0, a2
+	ld t0, 8(sp)
+	ld t1, 16(sp)
 
-	ld a0, 8(sp)
-	ld a1, 16(sp)
-	ld a2, 24(sp)
-	ld a3, 32(sp)
-	ld t0, 40(sp)
-	ld t1, 48(sp)
 	ld ra, (sp)
-	addi sp, sp, 64
+	addi sp, sp, 24
 	ret 
 
-factor_s_if:
-	sd a0, 8(sp)
-	sd a1, 16(sp)
-	sd a2, 24(sp)
-	sd a3, 32(sp)
-	sd t0, 40(sp)
-	sd t1, 48(sp)
-	
-	addi t2, t2, 1
-	sw t2, (a1)
 
-	call expression_s
-	
-
-	lw t2, (a1)
-	add t3, a0, t2
-	lb a3, (t3)
-
-	bne a3, t1, factor_error
-
-	addi t2, t2, 1
-	sw t2, (a1)
-
-	ld a0, 8(sp)
-	ld a1, 16(sp)
-	ld a2, 24(sp)
-	ld a3, 32(sp)
-	ld t0, 40(sp)
-	ld t1, 48(sp)
-	
-factor_error:
-	li a0, 0
-	ret
 
 ############################################
 
