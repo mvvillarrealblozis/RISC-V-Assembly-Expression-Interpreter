@@ -179,6 +179,7 @@ not_isdigit_s:
 # a1 - int *pos
 # a2 - int value
 # a3 - char token
+# a4 - temp 
 # t0 - ascii var '0' 48
 # t1 - 10 
 
@@ -186,32 +187,25 @@ number_s:
 	
 	li t0, 48 
 	li t1, 10 
-	lb a3, (a0)									# load current token 
-
-	mv a0, a3 
-	
-	call isdigit_s
-
-	beqz a0, not_num
 
 number_s_while:
+	lb a3, (a0)									# load current char 
+	mv a4, a3									# store curr char 
+
+	call isdigit_s
+
+	beqz a0, number_s_while_done
+
 	sub a3, a3, t0 								# token = token - '0'
 	mul a2, a2, t1 								# value = value * 10 
 	add a2, a2, a3 								# value * 10 + (token - '0')
 
 	addi a0, a0, 1								# *pos += 1 
 	
-	lb a3, (a0)
+	j number_s_while
 
-	mv a0, a3 
-	
-	call isdigit_s
-
-	bnez a0, number_s_while
-
-not_num:
-	mv a0, zero
-	ret 
+number_s_while_done:
+	ret  
 
 
 ############################################
