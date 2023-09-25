@@ -21,7 +21,7 @@ expression_s:
                         # These are caller-saved
                         # and we need them after
                         # the call to term_s
-    call term_s
+    call number_s
     mv t0, a0           # t0 (value) = term_s(expr_str, pos)
 
     ld a0, 8(sp)        # Restore a0 from stack
@@ -54,7 +54,7 @@ expression_while_cont:
     sd t4, 48(sp)
     sd t5, 56(sp)
 
-    call term_s
+    call number_s
 
     ld t0, 24(sp)       # Restore t0 (value) from stack
     add t0, t0, a0      # t0 (value) = t0 (value) + a0
@@ -79,7 +79,7 @@ expression_while_else:
     sd t4, 48(sp)
     sd t5, 56(sp)
 
-    call term_s
+    call number_s
 
     ld t0, 24(sp)       # Restore t0 (value) from stack
     sub t0, t0, a0      # t0 (value) = t0 (value) - a0
