@@ -9,10 +9,10 @@
 
 expression_s:
 
-	#call term_s
+	call term_s
 
 
-	#ret 
+	ret 
 	
 expression_s_while:
 
@@ -80,8 +80,8 @@ number_s:
 # a1 - int pos 
 
 eval_s:
-	#li a1, 0 
+	li a1, 0 
 
-	#call expression_s
+	call expression_s
 	
     ret
