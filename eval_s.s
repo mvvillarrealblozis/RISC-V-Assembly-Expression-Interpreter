@@ -37,7 +37,6 @@ expression_s:
 
 	mv a0, a2	
 
-
 	ld ra, (sp)
 	addi sp, sp, 48
 	ret
@@ -55,20 +54,18 @@ expression_s_while:
 	ret
 
 expression_s_add:
-	addi a0, a0, 1								# increase expr_str ptr
-
+	add a0, a0, 1
 	call number_s
 	
 	ld a2, 40(sp)
 	
-	add a2, a2, a0 								# add the value returned by term_s 
+	add a2, a2, a0							# add the value returned by term_s 
 
 	j expression_s_while
 
 
 expression_s_sub:
-	addi a0, a0, 1								# increase expr_str ptr
-
+	add a0, a0, 1
 	call number_s 
 	
 	ld a2, 40(sp)
