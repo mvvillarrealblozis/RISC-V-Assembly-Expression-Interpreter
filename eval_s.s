@@ -1,5 +1,9 @@
 .global eval_s
-
+.global isdigit_s
+.global number_s
+.global factor_s
+.global term_s
+.global expression_s
 
 # a0 - char *expr_str
 # a1 - int *pos
@@ -184,7 +188,7 @@ not_isdigit_s:
 # t1 - 10 
 
 number_s:
-	addi sp, sp, -24
+	addi sp, sp, -32
 	ld ra, (sp)
 	
 	li a2, 0									# int value = 0 
@@ -193,26 +197,34 @@ number_s:
 
 number_s_while:
 	lb a3, (a0)									# load current char 
-	mv a4, a3									# store curr char 
 
-	ld a0, 8(sp)
+	beqz a3, number_s_while_done
+
+	sd a0, 8(sp)
+	sd t0, 16(sp)
+	sd t1, 24(sp)
+
+	mv a0, a3
 	
 	call isdigit_s
 
-	beqz a3, number_s_while_done
+	ld a0, 8(sp)
+	ld t0, 16(sp)
+	ld t1, 24(sp)
 
 	sub a3, a3, t0 								# token = token - '0'
 	mul a2, a2, t1 								# value = value * 10 
 	add a2, a2, a3 								# value * 10 + (token - '0')
 
-	addi a0, a0, 1								# *pos += 1 
+	addi a1, a1, 1								# *pos += 1 
+	addi a0, a0, 1
 	
 	j number_s_while
 
 number_s_while_done:
-	ld a0, 8(sp)
+	mv a0, a2 
 	ld ra, (sp)
-	addi sp, sp, 24
+	addi sp, sp, 32
 	ret  
 
 
