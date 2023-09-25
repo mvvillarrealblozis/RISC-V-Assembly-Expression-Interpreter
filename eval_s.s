@@ -13,25 +13,39 @@
 # t1 - ascii var '-' 45 
 # returns value 
 
+
 expression_s:
-	addi sp, sp, -24
+	addi sp, sp, -48
 	sd ra, (sp)
-	sd t0, 8(sp)
-	sd t1, 16(sp)
+	sd a0, 8(sp)
+	sd a1, 16(sp)
+	sd t0, 24(sp)
+	sd t1, 32(sp)
+
+	call number_s
+	mv a2, a0 
 	
-	call term_s
+	sd a2, 40(sp)
 	
-	ld t0, 8(sp)
-	ld t1, 8(sp)
+	ld a2, 40(sp)
+	ld t1, 32(sp)
+	ld t0, 24(sp)
+	ld a1, 16(sp)
+	ld a0, 8(sp)
+
+	j expression_s_while
 	
+	mv a0, a2	
 	ld ra, (sp)
-	addi sp, sp, 24 
+	addi sp, sp, 48
 	ret 
 	
 expression_s_while:
 	li t0, 43 									# t0 = '+'
 	li t1, 45 									# t1 = '-'
 
+	add a0, a0, 1
+	beq a0, zero, null_ptr
 	lb a3, (a0) 								# load byte at expr_str into a3 (token)
 
 	beq a3, t0, expression_s_add				# expr_str[*pos] == '+'
@@ -42,8 +56,10 @@ expression_s_while:
 expression_s_add:
 	addi a0, a0, 1								# increase expr_str ptr
 
-	call term_s
-
+	call number_s
+	
+	ld a2, 40(sp)
+	
 	add a2, a2, a0 								# add the value returned by term_s 
 
 	j expression_s_while
@@ -52,11 +68,16 @@ expression_s_add:
 expression_s_sub:
 	addi a0, a0, 1								# increase expr_str ptr
 
-	call term_s 
+	call number_s 
+	
+	ld a2, 40(sp)
 
 	sub a2, a2, a0								# subtract the value returned by term_s
+	
+	j expression_s_while	
 
-	j expression_s_while		
+null_ptr:
+		
 
 
 ############################################
@@ -189,7 +210,7 @@ not_isdigit_s:
 
 number_s:
 	addi sp, sp, -32
-	ld ra, (sp)
+	sd ra, (sp)
 	
 	li a2, 0									# int value = 0 
 	li t0, 48 
@@ -208,6 +229,8 @@ number_s_while:
 	
 	call isdigit_s
 
+	beqz a0, error
+
 	ld a0, 8(sp)
 	ld t0, 16(sp)
 	ld t1, 24(sp)
@@ -221,11 +244,15 @@ number_s_while:
 	
 	j number_s_while
 
+error:
+	li a0, 0
+
 number_s_while_done:
 	mv a0, a2 
 	ld ra, (sp)
 	addi sp, sp, 32
-	ret  
+	ret
+
 
 
 ############################################
@@ -234,12 +261,12 @@ number_s_while_done:
 # a1 - int pos 
 
 eval_s:
-	li a1, 0 
-
 	addi sp, sp, -16
 	sd ra, (sp)
 	
-	call number_s
+	li a1, 0
+	
+	call expression_s
 
 	ld ra, (sp)
 	addi sp, sp, 16
