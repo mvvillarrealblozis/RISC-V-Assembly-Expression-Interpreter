@@ -26,26 +26,27 @@ expression_s:
 	mv a2, a0 
 	
 	sd a2, 40(sp)
-	
+
 	ld a2, 40(sp)
 	ld t1, 32(sp)
 	ld t0, 24(sp)
 	ld a1, 16(sp)
 	ld a0, 8(sp)
-
-	j expression_s_while
 	
+	j expression_s_while
+
 	mv a0, a2	
+
+
 	ld ra, (sp)
 	addi sp, sp, 48
-	ret 
-	
+	ret
+	 
 expression_s_while:
 	li t0, 43 									# t0 = '+'
 	li t1, 45 									# t1 = '-'
 
 	add a0, a0, 1
-	beq a0, zero, null_ptr
 	lb a3, (a0) 								# load byte at expr_str into a3 (token)
 
 	beq a3, t0, expression_s_add				# expr_str[*pos] == '+'
@@ -75,9 +76,7 @@ expression_s_sub:
 	sub a2, a2, a0								# subtract the value returned by term_s
 	
 	j expression_s_while	
-
-null_ptr:
-		
+	
 
 
 ############################################
