@@ -184,7 +184,10 @@ not_isdigit_s:
 # t1 - 10 
 
 number_s:
+	addi sp, sp, -24
+	ld ra, (sp)
 	
+	li a2, 0									# int value = 0 
 	li t0, 48 
 	li t1, 10 
 
@@ -192,9 +195,11 @@ number_s_while:
 	lb a3, (a0)									# load current char 
 	mv a4, a3									# store curr char 
 
+	ld a0, 8(sp)
+	
 	call isdigit_s
 
-	beqz a0, number_s_while_done
+	beqz a3, number_s_while_done
 
 	sub a3, a3, t0 								# token = token - '0'
 	mul a2, a2, t1 								# value = value * 10 
@@ -205,6 +210,9 @@ number_s_while:
 	j number_s_while
 
 number_s_while_done:
+	ld a0, 8(sp)
+	ld ra, (sp)
+	addi sp, sp, 24
 	ret  
 
 
@@ -216,6 +224,11 @@ number_s_while_done:
 eval_s:
 	li a1, 0 
 
-	call expression_s
+	addi sp, sp, -16
+	sd ra, (sp)
 	
+	call number_s
+
+	ld ra, (sp)
+	addi sp, sp, 16
     ret
