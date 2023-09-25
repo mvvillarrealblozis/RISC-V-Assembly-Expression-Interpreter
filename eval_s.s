@@ -113,7 +113,7 @@ term_s:
                         # These are caller-saved
                         # and we need them after
                         # the call to term_s
-    call number_s
+    call factor_s
     mv t0, a0           # t0 (value) = term_s(expr_str, pos)
 
     ld a0, 8(sp)        # Restore a0 from stack
@@ -142,7 +142,7 @@ term_while_cont:
     sd t4, 48(sp)
     sd t5, 56(sp)
 
-    call number_s
+    call factor_s
 
     ld t0, 24(sp)       # Restore t0 (value) from stack
     mul t0, t0, a0      # t0 (value) = t0 (value) * a0
@@ -167,7 +167,7 @@ term_while_else:
     sd t4, 48(sp)
     sd t5, 56(sp)
 
-    call number_s
+    call factor_s
 
     ld t0, 24(sp)       # Restore t0 (value) from stack
     div t0, t0, a0      # t0 (value) = t0 (value) / a0
@@ -196,30 +196,73 @@ term_while_done:
 # a3 - char token
 # t0 - ascii var '(' 40 
 # t1 - ascii var ')' 41 
+# t6 - temp val reg
 # returns value
 
 factor_s:
-	addi sp, sp, -24 
+	addi sp, sp, -64
 	sd ra, (sp)
-	sd t0, 8(sp)
-	sd t1, 16(sp)
+	sd a0, 8(sp)
+	sd a1, 16(sp)
+	sd a2, 24(sp)
+	sd a3, 32(sp)
+	sd t0, 40(sp)
+	sd t1, 48(sp)
 	
 	li t0, '('
 	li t1, ')'
 	
-	lb a3, (a0)
+	lw t2, (a1)
+	add t3, a0, t2
+	lb a3, (t3)
 	
-	beq a3, t0, factor_s_expression
+	beq a3, t0, factor_s_if
 
 	call number_s
+	
+	mv t6, a0
+	
+	j factor_done
 
-	ld t0, 8(sp)
-	ld t1, 16(sp)
+factor_s_if:
+	sd a0, 8(sp)
+	sd a1, 16(sp)
+	sd a2, 24(sp)
+	sd a3, 32(sp)
+	sd t0, 40(sp)
+	sd t1, 48(sp)
+	
+	addi t2, t2, 1
+	sw t2, (a1)
 
+	call expression_s
+
+	mv t6, a0
+	
+	ld a0, 8(sp)
+	ld a1, 16(sp)
+	ld a3, 32(sp)
+
+	lw t2, (a1)
+	add t3, a0, t2
+	lb a3, (t3)
+
+	bne a3, t1, factor_error
+
+	addi t2, t2, 1
+	sw t2, (a1)
+
+
+factor_done:
+	mv a0, t6
 	ld ra, (sp)
-	addi sp, sp, 24
+	addi sp, sp, 64
 	ret 
 
+factor_error:
+	li a0, 0
+	ret 	
+	
 
 
 ############################################
