@@ -7,74 +7,97 @@
 
 # a0 - char *expr_str
 # a1 - int *pos
-# a2 - int value
-# a3 - char token
-# t0 - ascii var '+' 43 
-# t1 - ascii var '-' 45 
-# returns value 
 
+# t0 - int value
+# t1 - char token
+# t2 - int pos_val
 
 expression_s:
-	addi sp, sp, -48
-	sd ra, (sp)
-	sd a0, 8(sp)
-	sd a1, 16(sp)
-	sd t0, 24(sp)
-	sd t1, 32(sp)
+    addi sp, sp, -64
+    sd ra, (sp)
 
-	call number_s
-	mv a2, a0 
-	
-	sd a2, 40(sp)
+    sd a0, 8(sp)        # Store a0 on stack
+    sd a1, 16(sp)       # Store a1 on stack
+                        # These are caller-saved
+                        # and we need them after
+                        # the call to term_s
+    call term_s
+    mv t0, a0           # t0 (value) = term_s(expr_str, pos)
 
-	ld a2, 40(sp)
-	ld t1, 32(sp)
-	ld t0, 24(sp)
-	ld a1, 16(sp)
-	ld a0, 8(sp)
-	
-	j expression_s_while
+    ld a0, 8(sp)        # Restore a0 from stack
+    ld a1, 16(sp)       # Restore a1 from stack
 
-	mv a0, a2	
+expression_while:
+    lw t2, (a1)         # t2 (pos_val) = *a1 (pos)
+    add t3, a0, t2      # t3 = a0 (*expr_str) + t2 (pos_val)
+    lb t1, (t3)         # t1 (token) = *t3
+    li t4, '+'
+    beq t1, t4, expression_while_cont
+    li t5, '-'
+    bne t1, t5, expression_while_done
 
-	ld ra, (sp)
-	addi sp, sp, 48
-	ret
-	 
-expression_s_while:
-	li t0, 43 									# t0 = '+'
-	li t1, 45 									# t1 = '-'
+expression_while_cont:
+    addi t2, t2, 1      # t2 (pos_val) = t2 (pos_val) + 1
+    sw t2, (a1)         # *pos = t2 (pos_val)
 
-	add a0, a0, 1
-	lb a3, (a0) 								# load byte at expr_str into a3 (token)
+    bne t1, t4, expression_while_else
 
-	beq a3, t0, expression_s_add				# expr_str[*pos] == '+'
-	beq a3, t1, expression_s_sub 				# expr_str[*pos] == '-'
+    sd a0, 8(sp)        # We need to preserve all caller-saved
+    sd a1, 16(sp)       # registers we are currently using.
+    bne t1, t4, expression_while_else
 
-	ret
+    sd a0, 8(sp)        # We need to preserve all caller-saved
+    sd a1, 16(sp)       # registers we are currently using.
+    sd t0, 24(sp)
+    sd t1, 32(sp)
+    sd t2, 40(sp)
+    sd t4, 48(sp)
+    sd t5, 56(sp)
 
-expression_s_add:
-	add a0, a0, 1
-	call number_s
-	
-	ld a2, 40(sp)
-	
-	add a2, a2, a0							# add the value returned by term_s 
+    call term_s
 
-	j expression_s_while
+    ld t0, 24(sp)       # Restore t0 (value) from stack
+    add t0, t0, a0      # t0 (value) = t0 (value) + a0
 
+    ld a0, 8(sp)        # Restore the rest of the caller-saved
+    ld a1, 16(sp)       # Registers.
+    ld t1, 32(sp)
+    ld t2, 40(sp)
+    ld t4, 48(sp)
+    ld t5, 56(sp)
 
-expression_s_sub:
-	add a0, a0, 1
-	call number_s 
-	
-	ld a2, 40(sp)
+    j expression_while
 
-	sub a2, a2, a0								# subtract the value returned by term_s
-	
-	j expression_s_while	
-	
+expression_while_else:
+    bne t1, t5, expression_while_done
 
+    sd a0, 8(sp)
+    sd a1, 16(sp)       # Preserve all caller-saved regs
+    sd t0, 24(sp)       # that we are using.
+    sd t1, 32(sp)
+    sd t2, 40(sp)
+    sd t4, 48(sp)
+    sd t5, 56(sp)
+
+    call term_s
+
+    ld t0, 24(sp)       # Restore t0 (value) from stack
+    sub t0, t0, a0      # t0 (value) = t0 (value) - a0
+
+    ld a0, 8(sp)        # Restore all caller-saved regs
+    ld a1, 16(sp)       # that we are using.
+    ld t1, 32(sp)
+    ld t2, 40(sp)
+    ld t4, 48(sp)
+    ld t5, 56(sp)
+
+    j expression_while
+
+expression_while_done:
+    mv a0, t0           # a0 = t0 (value)
+    ld ra, (sp)
+    addi sp, sp, 64
+    ret
 
 ############################################
 
