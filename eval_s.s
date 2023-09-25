@@ -199,28 +199,70 @@ term_while_done:
 # returns value
 
 factor_s:
-	addi sp, sp, -24 
+	addi sp, sp, -56
 	sd ra, (sp)
-	sd t0, 8(sp)
-	sd t1, 16(sp)
+	sd a0, 8(sp)
+	sd a1, 16(sp)
+	sd a2, 24(sp)
+	sd a3, 32(sp)
+	sd t0, 40(sp)
+	sd t1, 48(sp)
 	
 	li t0, '('
 	li t1, ')'
 	
-	lb a3, (a0)
+	lw t2, (a1)
+	add t3, a0, t2
+	lb a3, (t3)
 	
 	beq a3, t0, factor_s_expression
 
 	call number_s
 
-	ld t0, 8(sp)
-	ld t1, 16(sp)
+	mv a0, a2
 
+	ld t1, 48(sp)
+	ld t0, 40(sp)
+	ld a3, 32(sp)
+	ld a2, 24(sp)
+	ld a1, 16(sp)
+	ld a0, 8(sp)
 	ld ra, (sp)
-	addi sp, sp, 24
+	addi sp, sp, 56
 	ret 
 
+factor_s_expression:
+	sd a0, 8(sp)
+	sd a1, 16(sp)
+	sd a2, 24(sp)
+	sd a3, 32(sp)
+	sd t0, 40(sp)
+	sd t1, 48(sp)
+	
+	addi t2, t2, 1
+	sw t2, (a1)
 
+	call expression_s
+
+	lw t2, (a1)
+	add t3, a0, t2
+	lb a3, (t3)
+
+	bne a3, t1, factor_error
+
+	addi t2, t2, 1
+	sw t2, (a1)
+	
+	ld t1, 48(sp)
+	ld t0, 40(sp)
+	ld a3, 32(sp)
+	ld a2, 24(sp)
+	ld a1, 16(sp)
+	ld a0, 8(sp)
+	
+factor_error:
+	li a0, 0
+	ret
 
 ############################################
 
