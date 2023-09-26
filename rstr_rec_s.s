@@ -19,7 +19,7 @@ rstr_rec_s:
 	call strlen
 
 	mv t0, a0						# t0 = src_len
-	addi t0, t0, -1 				# src_len -= 1 
+	addi t0, t0, -1 					# src_len -= 1 
 
 	ld a0, 8(sp)
 	ld a1, 16(sp)
@@ -31,16 +31,16 @@ rstr_rec_s:
 	call rstr_rec_func_s
 	
 rstr_rec_func_s:
-	add t2, a2, a3 					# t2 = src + src_idx
+	add t2, a2, a3 						# t2 = src + src_idx
 	lb t1, (t2)					
 
-	beq t1, zero, base_case			# if src[src_idx] == '\0'
+	beq t1, zero, base_case					# if src[src_idx] == '\0'
 
-	add t3, a0, a1					# t3 = dst + dst_idx
+	add t3, a0, a1						# t3 = dst + dst_idx
 	sb t1, (t3)	
 	
-	addi a1, a1, 1  				# dst_idx += 1
-	addi a3, a3, -1 				# src_idx -= 1
+	addi a1, a1, 1  					# dst_idx += 1
+	addi a3, a3, -1 					# src_idx -= 1
 
 	call rstr_rec_func_s
 
