@@ -10,6 +10,7 @@
 unpack_bytes_s:
 	li t1, 0 				# i = 0 
 	li t2, 4				# temp = 4 
+	
 loop:
 	bge t1, t2, done
 
@@ -21,7 +22,6 @@ loop:
 
 	addi t1, t1, 1
 	j loop
-
 	
 done:
 	ret

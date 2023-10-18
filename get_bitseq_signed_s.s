@@ -33,4 +33,4 @@ get_bitseq_signed_s:
 	
 	ld ra, (sp)
 	addi sp, sp, 16 
-    ret
+	ret
