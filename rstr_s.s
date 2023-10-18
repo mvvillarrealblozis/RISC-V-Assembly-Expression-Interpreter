@@ -13,13 +13,9 @@
 
 
 rstr_s:
-<<<<<<< HEAD
 	addi sp, sp, -32		# allocate space on stack
 	sd ra, (sp)				# store return address
-=======
-	addi sp, sp, -24		# allocate space on stack
-	sd ra, (sp)			# store return address
->>>>>>> abb591220ef4d441635e21262bba5431bf3f8bd1
+
 	sd a0, 8(sp)			# store a0 (*dst) val in stack
 	sd a1, 16(sp)			# store a1 (*src) val in stack
 	
