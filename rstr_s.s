@@ -13,7 +13,7 @@
 
 
 rstr_s:
-	addi sp, sp, -24		# allocate space on stack
+	addi sp, sp, -32		# allocate space on stack
 	sd ra, (sp)				# store return address
 	sd a0, 8(sp)			# store a0 (*dst) val in stack
 	sd a1, 16(sp)			# store a1 (*src) val in stack
@@ -48,5 +48,5 @@ done:
 	sb zero, (t6)			# insert null terminator at the end of the string 
 	
 	ld ra, (sp)
-	addi sp, sp, 24
+	addi sp, sp, 32
     ret

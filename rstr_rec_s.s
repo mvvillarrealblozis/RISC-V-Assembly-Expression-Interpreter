@@ -9,7 +9,7 @@
 # t0 - src_len 
 
 rstr_rec_s:
-	addi sp, sp, -24
+	addi sp, sp, -32
 	sd ra, (sp)
 	sd a0, 8(sp)
 	sd a1, 16(sp)
@@ -52,5 +52,5 @@ base_case:
 
 done:
 	ld ra, (sp)
-	addi sp, sp, 24
+	addi sp, sp, 32
 	ret
