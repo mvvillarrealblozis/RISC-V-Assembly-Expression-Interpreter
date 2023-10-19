@@ -21,6 +21,7 @@ loop:
 	addi a1, a1, 4
 
 	addi t1, t1, 1
+
 	j loop
 	
 done:
