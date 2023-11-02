@@ -13,6 +13,7 @@ rstr_rec_s:
 	sd ra, (sp)
 	sd a0, 8(sp)
 	sd a1, 16(sp)
+	sd t0, 24(sp)
 	
 	mv a0, a1					# move source into a0 
 	
@@ -27,30 +28,27 @@ rstr_rec_s:
 	mv a2, a1					# a2 = char *src 
 	mv a1, zero					# a1 = 0 
 	mv a3, t0 					# a3 = int src_idx
-
-	call rstr_rec_func_s
-
-	j done
 		
-rstr_rec_func_s:
-	add t2, a2, a3 				# t2 = src + src_idx
-	lb t1, (t2)					
+rec_step:
+	add t2, a2, a3				# t2 = src + src_idx
+	lb t1, (t2)
 
 	beq t1, zero, base_case		# if src[src_idx] == '\0'
 
 	add t3, a0, a1				# t3 = dst + dst_idx
 	sb t1, (t3)	
-	
-	addi a1, a1, 1  			# dst_idx += 1
-	addi a3, a3, -1 			# src_idx -= 1
 
-	call rstr_rec_func_s
+	addi a1, a1, 1 				# dst_idx += 1
+	addi a3, a3, -16			# src_idx -= 1
+
+	j rec_step
 	
 base_case:
 	add t3, a0, a1 
 	sb zero, (t3)
 
 done:
+	ld t0, 24(sp)
 	ld ra, (sp)
 	addi sp, sp, 32
 	ret
